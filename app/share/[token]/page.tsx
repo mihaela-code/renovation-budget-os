@@ -16,7 +16,9 @@ export default async function SharePage({ params }: PageProps) {
     );
   }
 
-  const fnUrl = `${supabaseUrl}/functions/v1/get-shared-project?token=${token}`;
+  const fnUrl = `${supabaseUrl}/functions/v1/get-shared-project?token=${encodeURIComponent(
+    token
+  )}`;
 
   const res = await fetch(fnUrl, {
     headers: {
@@ -30,14 +32,17 @@ export default async function SharePage({ params }: PageProps) {
     return (
       <main style={{ padding: 24 }}>
         <h1>Invalid or expired link</h1>
+        <p>Token: {token}</p>
       </main>
     );
   }
 
   if (!res.ok) {
+    const text = await res.text().catch(() => "");
     return (
       <main style={{ padding: 24 }}>
         <h1>Error: {res.status}</h1>
+        {text ? <pre style={{ whiteSpace: "pre-wrap" }}>{text}</pre> : null}
       </main>
     );
   }
@@ -47,7 +52,8 @@ export default async function SharePage({ params }: PageProps) {
   return (
     <main style={{ padding: 24 }}>
       <h1>Shared project</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <p>Token: {token}</p>
+      <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(data, null, 2)}</pre>
     </main>
   );
 }
